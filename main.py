@@ -1,5 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
+import os
 
 import configparser
 
@@ -7,20 +8,23 @@ config = configparser.ConfigParser()
 
 config.read('params.ini', encoding='utf-8')
 
+
 def get_value_from_PARAMS(value):
     return config.getfloat("PARAMS", value)
+
 
 def get_QuantityScenario():
     return config.getint("QuantityScenario", "n")
 
-def get_scenario_from_ini(value):
-     k = config.getfloat(f'scenario{value}', 'k')
-     engine_on = config.getboolean(f'scenario{value}', 'engine_on')
-     thrust = config.getfloat(f'scenario{value}', 'thrust')
-     initial_state = list(map(float, config.get(f'scenario{value}', 'initial_state').split(',')))
-     title = config.get(f'scenario{value}', 'title')
 
-     return k, engine_on, thrust, initial_state, title
+def get_scenario_from_ini(value):
+    k = config.getfloat(f'scenario{value}', 'k')
+    engine_on = config.getboolean(f'scenario{value}', 'engine_on')
+    thrust = config.getfloat(f'scenario{value}', 'thrust')
+    initial_state = list(map(float, config.get(f'scenario{value}', 'initial_state').split(',')))
+    title = config.get(f'scenario{value}', 'title')
+
+    return k, engine_on, thrust, initial_state, title
 
 
 # Константы (те же, что и раньше)
@@ -29,6 +33,7 @@ M = get_value_from_PARAMS("M")
 m = get_value_from_PARAMS("m_t")
 dt = get_value_from_PARAMS("dt")  # Шаг по времени
 T = get_value_from_PARAMS("T")  # Общее время моделирования (может потребоваться корректировка)
+
 
 # Функция f (без изменений)
 def f(t, state, k, engine_on, thrust):
@@ -72,6 +77,7 @@ def simulate(k, initial_state, engine_on_check, thrust):
     return states[:, 0], states[:, 1]
 
 
+os.mkdir('out')
 for i in range(0, get_QuantityScenario()):
     k, engine_on, thrust, initial_state, title = get_scenario_from_ini(i + 1)
     x, y = simulate(k, initial_state, engine_on, thrust)
@@ -82,5 +88,5 @@ for i in range(0, get_QuantityScenario()):
     ax.set_xlabel("x")
     ax.set_ylabel("y")
     ax.grid(True)
-    plt.savefig(f'out/image{i+1}.png')
+    plt.savefig(f'out/image{i + 1}.png')
     plt.cla()
