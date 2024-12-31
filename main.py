@@ -76,8 +76,9 @@ def simulate(k, initial_state, engine_on_check, thrust):
         engine_on = engine_on_check  # Проверка условия включения двигателя
     return states[:, 0], states[:, 1]
 
+if not os.path.isdir('out'):
+    os.mkdir('out')
 
-os.mkdir('out')
 for i in range(0, get_QuantityScenario()):
     k, engine_on, thrust, initial_state, title = get_scenario_from_ini(i + 1)
     x, y = simulate(k, initial_state, engine_on, thrust)
